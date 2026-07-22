@@ -1,6 +1,13 @@
 // ============================================================================
 // main.cpp
 //
+//  Project:     Echo Hiding Audio
+//  Authors:     John N. Weaver
+//                       Alex W. Bryant 
+ //  GitHub:      https://github.com/John-N-Weaver/Echo-Hiding-Audio
+ //  Created:     July 21, 2026
+ //  Last Updated: July 21, 2026
+//
 // Command-line entry point for the echo-hiding steganography tool.
 //
 // Usage (matches the assignment spec exactly):
