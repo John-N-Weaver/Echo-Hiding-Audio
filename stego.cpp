@@ -1,6 +1,12 @@
 // ============================================================================
 // stego.cpp
-//
+// Project:     Echo Hiding Audio
+//  Authors:     John N. Weaver
+//                       Alex W. Bryant 
+ //  GitHub:      https://github.com/John-N-Weaver/Echo-Hiding-Audio
+ //  Created:     July 21, 2026
+ //  Last Updated: July 21, 2026
+// 
 // High-level hide/extract orchestration + message-file I/O + the payload
 // header format. The actual echo mixer and cepstrum detector live in
 // stego_echo.cpp (created in steps b/c) -- this file only calls the
@@ -31,29 +37,9 @@ DWORD stego_capacity_bits(const WaveFile* cover)
     return wave_frame_count(cover) / ECHO_SEGMENT_LEN;
 }
 
-// ============================================================================
-// STUB IMPLEMENTATIONS (step a).
-//
-// Both leave the audio untouched / return zero-filled bits, but they DO
-// respect the bitCount/maxBits contract so the CLI can be tested end-to-
-// end. Step (b) replaces embed_echo; step (c) replaces extract_echo.
-// ============================================================================
-DWORD embed_echo(WaveFile* /*cover*/, const BYTE* /*bits*/, DWORD bitCount)
-{
-    fprintf(stderr, "[stub] embed_echo: would embed %u bits "
-                    "(implemented in step b)\n", bitCount);
-    return bitCount;   // pretend we succeeded so CLI flow can be exercised
-}
-
-DWORD extract_echo(const WaveFile* /*stego*/, BYTE* bits, DWORD maxBits)
-{
-    fprintf(stderr, "[stub] extract_echo: would recover up to %u bits "
-                    "(implemented in step c)\n", maxBits);
-    // Zero the buffer so the header check below fails loudly and predictably
-    // rather than reading whatever was on the stack.
-    memset(bits, 0, (maxBits + 7) / 8);
-    return 0;
-}
+// NOTE: embed_echo() and extract_echo() live in stego_echo.cpp. They are
+// declared in stego.h and linked in at build time -- this file is only
+// responsible for the CLI-facing high-level flow and the payload header.
 
 // ----------------------------------------------------------------------------
 // bytes_to_bits / bits_to_bytes  (internal)

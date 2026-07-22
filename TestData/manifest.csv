@@ -1,0 +1,8 @@
+filename,channels,bits_per_sample,sample_rate_hz,duration_seconds,approx_1_lsb_capacity_bytes,file_size_bytes
+01_silence_5s_mono_16bit_44100.wav,1,16,44100,5.000,27562,441044
+02_tone_440Hz_5s_mono_16bit_44100.wav,1,16,44100,5.000,27562,441044
+03_chirp_200-4000Hz_5s_mono_16bit_44100.wav,1,16,44100,5.000,27562,441044
+04_noise_5s_mono_16bit_44100.wav,1,16,44100,5.000,27562,441044
+05_stereo_tones_5s_16bit_44100.wav,2,16,44100,5.000,55125,882044
+06_tone_440Hz_5s_mono_8bit_22050.wav,1,8,22050,5.000,13781,110294
+07_tone_440Hz_5s_mono_24bit_48000.wav,1,24,48000,5.000,30000,720044

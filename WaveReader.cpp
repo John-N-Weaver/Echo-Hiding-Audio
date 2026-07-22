@@ -1,5 +1,6 @@
 // WaveReader.cpp
-//
+//   Provided by John A. Ortiz for the UTSA Steganography course.
+//   Excluded from build to avoid duplicate symbol errors with stego.cpp, which also includes wave.h and defines main().
 // this program reads a wave file and displays the header info
 //
 

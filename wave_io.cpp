@@ -1,6 +1,13 @@
 // ============================================================================
 // wave_io.cpp
 //
+//  Project:     Echo Hiding Audio
+//  Authors:     John N. Weaver
+//                       Alex W. Bryant 
+ //  GitHub:      https://github.com/John-N-Weaver/Echo-Hiding-Audio
+ //  Created:     July 21, 2026
+ //  Last Updated: July 21, 2026
+//
 // Implementation of the reusable WAV reader/writer declared in wave_io.h.
 // Modeled directly on the provided WaveReader.cpp chunk-walking pattern,
 // but:
@@ -9,6 +16,8 @@
 //   * keeps every chunk so we can round-trip the file on write,
 //   * exposes typed sample views (unsigned char* for 8-bit, short* for 16-bit)
 //     that the echo-hiding embed/extract code will mutate in place.
+//
+//     WaveReader.cpp Provided by John A. Ortiz for the UTSA Steganography course.
 // ============================================================================
 #define _CRT_SECURE_NO_WARNINGS
 #include "wave_io.h"

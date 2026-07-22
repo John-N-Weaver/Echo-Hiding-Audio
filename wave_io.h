@@ -1,6 +1,14 @@
 // ============================================================================
 // wave_io.h
 //
+//  Project:     Echo Hiding Audio
+//  Authors:     John N. Weaver
+//                      Alex W. Bryant 
+ //  GitHub:      https://github.com/John-N-Weaver/Echo-Hiding-Audio
+ //  Created:     July 21, 2026
+ //  Last Updated: July 21, 2026
+
+
 // Reusable WAV file I/O for the echo-hiding steganography project.
 //
 // Wraps the chunk-based reader pattern from the provided WaveReader.cpp and

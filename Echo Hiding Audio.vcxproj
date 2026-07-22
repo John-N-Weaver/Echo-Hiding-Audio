@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stego.cpp" />
+    <ClCompile Include="stego_echo.cpp" />
     <ClCompile Include="WaveReader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -141,6 +142,27 @@
     <ClInclude Include="stego.h" />
     <ClInclude Include="wave.h" />
     <ClInclude Include="wave_io.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include="Tests\run_tests.bat" />
+    <None Include="Tests\TESTING_REPORT.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="TestData\01_silence_5s_mono_16bit_44100.wav" />
+    <Media Include="TestData\02_tone_440Hz_5s_mono_16bit_44100.wav" />
+    <Media Include="TestData\03_chirp_200-4000Hz_5s_mono_16bit_44100.wav" />
+    <Media Include="TestData\04_noise_5s_mono_16bit_44100.wav" />
+    <Media Include="TestData\05_stereo_tones_5s_16bit_44100.wav" />
+    <Media Include="TestData\06_tone_440Hz_5s_mono_8bit_22050.wav" />
+    <Media Include="TestData\07_tone_440Hz_5s_mono_24bit_48000.wav" />
+    <Media Include="TestData\alec_koff-blues-ballad-487408.mp3" />
+    <Media Include="TestData\alex-morgan-rock-rock-music-545498.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TestData\random_text_message.txt" />
+    <Text Include="TestData\sample_message.txt" />
+    <Text Include="TestData\wav_test_pack_README.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

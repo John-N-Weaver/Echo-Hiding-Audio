@@ -1,5 +1,7 @@
 // wave.h
 // 
+//  Source: Provided by John A.Ortiz for the UTSA Steganography course.
+//  not modified for this project, kept as is for reference. It defines the structures used to represent WAV files, including the chunk structure, format structure, and data structure. The code also includes necessary headers and defines constants for success and failure, as well as a maximum number of chunks.
 // contains wave structures
 //
 

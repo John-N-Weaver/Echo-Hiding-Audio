@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{f9ca57b2-116e-47b8-9c7b-a6b8674a955a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestData">
+      <UniqueIdentifier>{7a8336c0-bd23-4988-93e3-711667e0d54d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,6 +33,9 @@
     <ClCompile Include="WaveReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stego_echo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stego.h">
@@ -38,5 +47,54 @@
     <ClInclude Include="wave_io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Tests\run_tests.bat">
+      <Filter>Tests</Filter>
+    </None>
+    <None Include="Tests\TESTING_REPORT.md">
+      <Filter>Tests</Filter>
+    </None>
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="TestData\01_silence_5s_mono_16bit_44100.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\02_tone_440Hz_5s_mono_16bit_44100.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\03_chirp_200-4000Hz_5s_mono_16bit_44100.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\04_noise_5s_mono_16bit_44100.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\05_stereo_tones_5s_16bit_44100.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\06_tone_440Hz_5s_mono_8bit_22050.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\07_tone_440Hz_5s_mono_24bit_48000.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\alec_koff-blues-ballad-487408.mp3">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\alex-morgan-rock-rock-music-545498.mp3">
+      <Filter>TestData</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TestData\random_text_message.txt">
+      <Filter>TestData</Filter>
+    </Text>
+    <Text Include="TestData\sample_message.txt">
+      <Filter>TestData</Filter>
+    </Text>
+    <Text Include="TestData\wav_test_pack_README.txt">
+      <Filter>TestData</Filter>
+    </Text>
   </ItemGroup>
 </Project>

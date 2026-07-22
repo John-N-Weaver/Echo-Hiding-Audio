@@ -27,27 +27,27 @@ static void print_usage(const char* prog)
 {
     if (prog == NULL) prog = "stego.exe";
     printf(
-        "\n"
-        "Echo-hiding steganography tool\n"
-        "\n"
-        "USAGE:\n"
-        "  %s -hide    -m <message file | random> -c <cover.wav> [-o <stego.wav>]\n"
-        "  %s -extract -s <stego.wav>                            [-o <message file>]\n"
-        "\n"
-        "OPTIONS:\n"
-        "  -hide           Embed a message inside a cover WAV.\n"
-        "  -extract        Recover a message from a stego WAV.\n"
-        "  -m <path>       Message file to hide. Use the literal word 'random'\n"
-        "                  to fill the cover with random bits.\n"
-        "  -c <path>       Cover WAV (8-bit unsigned or 16-bit signed PCM, mono/stereo).\n"
-        "  -s <path>       Stego WAV to extract from.\n"
-        "  -o <path>       Output file. Defaults to 'stego.wav' or 'message.out'.\n"
-        "\n"
-        "EXAMPLES:\n"
-        "  %s -hide -m secret.txt -c song.wav -o hidden.wav\n"
-        "  %s -hide -m random -c song.wav\n"
-        "  %s -extract -s hidden.wav -o recovered.txt\n"
-        "\n",
+"\n"
+"Echo-hiding steganography tool\n"
+"\n"
+"USAGE:\n"
+"  %s -hide    -m <message file | random> -c <cover.wav> [-o <stego.wav>]\n"
+"  %s -extract -s <stego.wav>                            [-o <message file>]\n"
+"\n"
+"OPTIONS:\n"
+"  -hide           Embed a message inside a cover WAV.\n"
+"  -extract        Recover a message from a stego WAV.\n"
+"  -m <path>       Message file to hide. Use the literal word 'random'\n"
+"                  to fill the cover with random bits.\n"
+"  -c <path>       Cover WAV (8-bit unsigned or 16-bit signed PCM, mono/stereo).\n"
+"  -s <path>       Stego WAV to extract from.\n"
+"  -o <path>       Output file. Defaults to 'stego.wav' or 'message.out'.\n"
+"\n"
+"EXAMPLES:\n"
+"  %s -hide -m secret.txt -c song.wav -o hidden.wav\n"
+"  %s -hide -m random -c song.wav\n"
+"  %s -extract -s hidden.wav -o recovered.txt\n"
+"\n",
         prog, prog, prog, prog, prog);
 }
 
@@ -80,7 +80,14 @@ int main(int argc, char** argv)
     // parameters").
     if (argc < 2) { print_usage(argv[0]); return 1; }
 
-    int wantHide = has_flag(argc, argv, "-hide");
+    // --help / -h prints the full usage and exits successfully.
+    if (has_flag(argc, argv, "--help") || has_flag(argc, argv, "-h"))
+    {
+        print_usage(argv[0]);
+        return 0;
+    }
+
+    int wantHide    = has_flag(argc, argv, "-hide");
     int wantExtract = has_flag(argc, argv, "-extract");
 
     // Exactly one mode must be selected.
@@ -93,20 +100,16 @@ int main(int argc, char** argv)
 
     if (wantHide)
     {
-        const char* msg = find_flag_value(argc, argv, "-m");
+        const char* msg   = find_flag_value(argc, argv, "-m");
         const char* cover = find_flag_value(argc, argv, "-c");
-        const char* out = find_flag_value(argc, argv, "-o");
+        const char* out   = find_flag_value(argc, argv, "-o");
 
         if (msg == NULL)
-        {
-            fprintf(stderr, "Error: -hide requires -m <message file | random>\n");
-            print_usage(argv[0]); return 1;
-        }
+        { fprintf(stderr, "Error: -hide requires -m <message file | random>\n");
+          print_usage(argv[0]); return 1; }
         if (cover == NULL)
-        {
-            fprintf(stderr, "Error: -hide requires -c <cover.wav>\n");
-            print_usage(argv[0]); return 1;
-        }
+        { fprintf(stderr, "Error: -hide requires -c <cover.wav>\n");
+          print_usage(argv[0]); return 1; }
         if (out == NULL) out = "stego.wav";   // spec: -o is optional
 
         return stego_hide(msg, cover, out);
@@ -114,13 +117,11 @@ int main(int argc, char** argv)
     else // wantExtract
     {
         const char* stego = find_flag_value(argc, argv, "-s");
-        const char* out = find_flag_value(argc, argv, "-o");
+        const char* out   = find_flag_value(argc, argv, "-o");
 
         if (stego == NULL)
-        {
-            fprintf(stderr, "Error: -extract requires -s <stego.wav>\n");
-            print_usage(argv[0]); return 1;
-        }
+        { fprintf(stderr, "Error: -extract requires -s <stego.wav>\n");
+          print_usage(argv[0]); return 1; }
         if (out == NULL) out = "message.out"; // spec: -o is optional
 
         return stego_extract(stego, out);
