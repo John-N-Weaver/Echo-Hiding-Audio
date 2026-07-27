@@ -58,6 +58,33 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Media Include="TestData\60s_test_cover.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\music_blues_16bit_mono.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\music_blues_16bit_stereo.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\music_rock_16bit_stereo.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\near_silence_16bit_mono.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\near_silence_16bit_stereo.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\sparse_quiet_16bit_mono.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\sparse_quiet_16bit_stereo.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\speech_8bit_mono.wav">
+      <Filter>TestData</Filter>
+    </Media>
     <Media Include="TestData\01_silence_5s_mono_16bit_44100.wav">
       <Filter>TestData</Filter>
     </Media>
@@ -91,6 +118,12 @@
       <Filter>TestData</Filter>
     </Text>
     <Text Include="TestData\sample_message.txt">
+      <Filter>TestData</Filter>
+    </Text>
+    <Text Include="TestData\Corpus\SOURCES.md">
+      <Filter>TestData</Filter>
+    </Text>
+    <Text Include="TestData\manifest.csv">
       <Filter>TestData</Filter>
     </Text>
     <Text Include="TestData\wav_test_pack_README.txt">

@@ -40,7 +40,7 @@ echo === T4: missing cover ===
 echo === T5: non-WAV file as cover ===
 "%STEGO%" -hide -m msg.txt -c run_tests.bat -o out.wav && (echo   T5 FAIL & goto :fail) || echo   T5 PASS
 
-echo === T6: extract on untouched cover (no ECHO magic) ===
+echo === T6: extract on untouched cover (no parameter block) ===
 "%STEGO%" -extract -s cover.wav -o junk.bin && (echo   T6 FAIL & goto :fail) || echo   T6 PASS
 
 echo.
