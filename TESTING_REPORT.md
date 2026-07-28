@@ -9,15 +9,18 @@ parsed from actual program output. This supersedes the Milestone 1 draft of
 this report, which was written against an earlier, non-final CLI/header
 design.
 
-**Repo note**: `TestData/Corpus/` has since been trimmed to the 8 files
-that round-trip successfully. The two source MP3s and the seven 5-second
-test WAVs are still kept in `TestData/` for reference, but neither works as
-a cover -- MP3 can never work since the tool only accepts uncompressed PCM
-WAV, and the 5-second files can't hold even the 56-bit parameter block (at
-most 53 of 56 bits fit before the file runs out). The tables below
-reference all 19 original corpus files and both bad-format cases, since
-that's the actual data this report documents; `SOURCES.md` explains the
-corpus trim in more detail.
+**Repo note**: `TestData/Corpus/` is trimmed to files confirmed
+round-tripping successfully -- 8 from the original 19-file corpus (Sections
+1-5 below), plus 3 more added in a second round after a teammate uploaded
+additional test WAVs directly to `TestData/` (Section 6). The two source
+MP3s and the seven 5-second test WAVs are still kept in `TestData/` for
+reference, but neither works as a cover -- MP3 can never work since the
+tool only accepts uncompressed PCM WAV, and the 5-second files can't hold
+even the 56-bit parameter block (at most 53 of 56 bits fit before the file
+runs out). The tables in Sections 1-5 reference all 19 original corpus
+files and both bad-format cases, since that's the actual data measured at
+the time; `SOURCES.md` explains both rounds of the corpus trim in more
+detail.
 
 A full 4-parameter sweep (segment length, both delays, amplitude, message
 cap) across the whole corpus, as described in the M1 report's Analysis
@@ -176,7 +179,50 @@ data -- every autocorrelation variant tried was measurably worse (40-100%
 BER) than direct comparison (0-3.8% BER) at this implementation's
 parameters.
 
-## 6. Reproducing these numbers
+## 6. Second round: teammate-contributed test data
+
+A teammate uploaded a larger batch of test WAV files directly to
+`TestData/` (the `wavs-main (Massey)/` pack, `audiocheck.net_*` files, and
+`sample-3s-*` files -- 24 WAV files total) plus several new message files
+under `TestData/messages/`. All 24 were format-compatible (confirmed via
+`ffprobe`: every one is 16-bit PCM, so none were rejected outright the way
+a 24-bit or compressed file would be), and all 24 were run through the same
+hide/extract/BER-compare harness as Sections 1-5, using
+`TestData/messages/sample_message.txt`.
+
+| File | Result |
+|---|---|
+| `noise.wav` | **0.00% BER** |
+| `audiocheck.net_pinknoise.wav` | **0.00% BER** |
+| `audiocheck.net_whitenoise.wav` | **0.00% BER** |
+| `collectathon.wav` | 1.09% BER |
+| `echomorph-hpf.wav` | extract failed (parameter block) |
+| `echomorph-nohpf.wav` | extract failed (parameter block) |
+| `synth.wav` | extract failed (parameter block) |
+| `audiocheck.net_hdsweep_1Hz_44000Hz_-3dBFS_30s.wav` | extract failed (parameter block) |
+| `audiocheck.net_hdsweep_1Hz_48000Hz_-3dBFS_30s.wav` | extract failed (parameter block) |
+| `gc.wav` | 31.94% BER (unusable) |
+| `hindrance-of-a-fish.wav` | 49.64% BER (unusable) |
+| `car-horn.wav`, `fifths.wav`, `overdrive.wav`, `sine.wav`, `voice.wav`, `voice-note.wav`, all 3 `audiocheck.net_hdchirp_*`, all 4 `sample-3s-*` | no capacity -- too short to hold even the 56-bit parameter block |
+
+**3 of 24 round-tripped with zero bit errors**: `noise.wav`,
+`audiocheck.net_pinknoise.wav`, `audiocheck.net_whitenoise.wav`. All three
+are broadband noise recordings, which fits the pattern already established
+in Sections 1-5 -- noisy/broadband content gives the cepstrum detector the
+cleanest signal to key off, the same reason dense music and near-silence
+(which is itself just a noise floor) outperformed speech and tones. These
+three are copied into `TestData/Corpus/` as `noise_16bit_mono.wav`,
+`pinknoise_16bit_mono.wav`, and `whitenoise_16bit_mono.wav`.
+
+The capacity failures are almost entirely a duration problem, not a format
+problem: most of these files are 1-5 second samples (some at very high
+sample rates, like the 176.4kHz/192kHz chirps), and the parameter block
+needs 229,376 samples (56 segments x 4096) regardless of sample rate --
+that's 1.2-5.2 seconds depending on rate, longer than nearly every file in
+this batch. This is the same failure mode documented for the original
+5-second test WAVs in Section 5, just arrived at from a different corpus.
+
+## 7. Reproducing these numbers
 
 All results above come from a Python harness that drives the real
 `x64\Release\Echo Hiding Audio.exe` through hide/extract on every file in

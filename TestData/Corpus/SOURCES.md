@@ -6,15 +6,30 @@ sparse/quiet, synthetic tones, and near-silence, each with 8-bit/16-bit and
 mono/stereo variants. All files are 44.1kHz, ~90s (some longer where a
 source conversion ran long).
 
-**This folder is trimmed to the 8 files that round-trip successfully** (see
-`../../TESTING_REPORT.md` Sections 4-5 for the measured BER/failure data on
-the full original 19-file set, including *why* the excluded ones fail --
-mostly 8-bit quantization crushing quiet passages to literal silence, which
-the parameter block has no tolerance for). The two source MP3s
-(`alec_koff-blues-ballad-487408.mp3`, `alex-morgan-rock-rock-music-545498.mp3`)
+**This folder is trimmed to files confirmed round-tripping successfully**
+(see `../../TESTING_REPORT.md` Sections 4-5 for the measured BER/failure
+data on the full original 19-file set, including *why* the excluded ones
+fail -- mostly 8-bit quantization crushing quiet passages to literal
+silence, which the parameter block has no tolerance for). The two source
+MP3s (`alec_koff-blues-ballad-487408.mp3`, `alex-morgan-rock-rock-music-545498.mp3`)
 are kept one level up in `TestData/` for reference, but can never work as a
 cover -- the tool only accepts uncompressed PCM WAV; their WAV conversions
 (`music_blues_*`, `music_rock_*` below) are the usable form.
+
+**Second round**: a teammate uploaded a larger batch of test WAVs and
+messages directly to `TestData/` (the `wavs-main (Massey)/` pack and the
+`audiocheck.net_*`/`sample-3s-*` files, plus `TestData/messages/`). All 24
+of the new WAV files were tested the same way; only 3 round-tripped with
+zero bit errors, and they're copied into this folder too:
+`noise_16bit_mono.wav` (from `wavs-main (Massey)/noise.wav`),
+`pinknoise_16bit_mono.wav` and `whitenoise_16bit_mono.wav` (from
+`audiocheck.net_pinknoise.wav`/`_whitenoise.wav`). All three are broadband
+noise content, consistent with the pattern already established here --
+noisy/broadband material gives the detector the most to work with. The
+other 21 either lacked capacity (most are 1-5 second samples, too short to
+hold the 56-bit parameter block regardless of sample rate) or failed
+parameter-block validation the same way the excluded 8-bit/synthetic-tone
+files did; see `../../TESTING_REPORT.md` for the full per-file results.
 
 ## Real recordings (converted to WAV with ffmpeg)
 

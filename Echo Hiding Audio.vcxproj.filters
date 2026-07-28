@@ -85,6 +85,15 @@
     <Media Include="TestData\Corpus\speech_8bit_mono.wav">
       <Filter>TestData</Filter>
     </Media>
+    <Media Include="TestData\Corpus\noise_16bit_mono.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\pinknoise_16bit_mono.wav">
+      <Filter>TestData</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\whitenoise_16bit_mono.wav">
+      <Filter>TestData</Filter>
+    </Media>
     <Media Include="TestData\01_silence_5s_mono_16bit_44100.wav">
       <Filter>TestData</Filter>
     </Media>

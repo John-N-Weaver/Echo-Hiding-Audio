@@ -164,6 +164,9 @@
     <Media Include="TestData\Corpus\sparse_quiet_16bit_mono.wav" />
     <Media Include="TestData\Corpus\sparse_quiet_16bit_stereo.wav" />
     <Media Include="TestData\Corpus\speech_8bit_mono.wav" />
+    <Media Include="TestData\Corpus\noise_16bit_mono.wav" />
+    <Media Include="TestData\Corpus\pinknoise_16bit_mono.wav" />
+    <Media Include="TestData\Corpus\whitenoise_16bit_mono.wav" />
     <Media Include="TestData\01_silence_5s_mono_16bit_44100.wav" />
     <Media Include="TestData\02_tone_440Hz_5s_mono_16bit_44100.wav" />
     <Media Include="TestData\03_chirp_200-4000Hz_5s_mono_16bit_44100.wav" />

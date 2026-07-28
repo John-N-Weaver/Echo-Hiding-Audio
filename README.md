@@ -109,12 +109,13 @@ hold a message. A reliable first try:
 **Note on reliability**: the parameter block currently has no error
 correction, so extraction can fail cleanly (a "No hidden data found or file
 corrupted" error, not a crash) on some content/bit-depth combinations --
-see `TESTING_REPORT.md` Section 4-5 for the full data, including the 11
-files (mostly 8-bit, plus all synthetic-tone variants) that were pulled
-from `TestData/Corpus/` for exactly this reason. Every file still in the
-repo -- `music_blues_16bit_mono/stereo`, `music_rock_16bit_stereo`,
+see `TESTING_REPORT.md` Sections 4-6 for the full data, including every
+file that was tried and excluded. Every file in `TestData/Corpus/` --
+`music_blues_16bit_mono/stereo`, `music_rock_16bit_stereo`,
 `near_silence_16bit_mono/stereo`, `sparse_quiet_16bit_mono/stereo`,
-`speech_8bit_mono`, and `60s_test_cover.wav` -- round-trips reliably.
+`speech_8bit_mono`, `noise_16bit_mono`, `pinknoise_16bit_mono`,
+`whitenoise_16bit_mono`, plus `TestData/60s_test_cover.wav` -- round-trips
+reliably.
 
 ## How to Run the Test Harness
 
