@@ -1,0 +1,27 @@
+﻿field,group,unit_or_values,description
+run_id,identity,,Unique PG-23 run identifier.
+test_id,identity,,Controlled case identifier.
+test_kind,identity,payload_fraction/lower_limit,Matrix group.
+cover_category,cover,,"Music, speech, sparse, near silence, etc."
+frame_count,cover,frames,Audio frames in the tested cover.
+payload_capacity_complete_bytes,capacity,bytes,Complete payload-byte capacity after header.
+target_payload_fraction,capacity,ratio/frame_boundary,Requested capacity fraction or lower-limit label.
+requested_payload_bytes,capacity,bytes,Generated payload size.
+expected_recoverable_bytes,capacity,bytes,Complete bytes expected to fit.
+expected_outcome,functional,,"Expected complete, partial-prefix, or hide failure."
+hide_exit_code,functional,,Executable hide return code.
+extract_exit_code,functional,,Executable extract return code.
+observed_outcome,functional,,"Observed complete, partial-prefix, failure, or corruption."
+execution_pass,functional,boolean,Observed outcome equals expected outcome.
+analysis_status,PG-14,PASS/FAIL,PG-14 row completion.
+prefix_exact,recovery,boolean,All compared recovered bytes match.
+ber_compared,recovery,ratio,BER within recovered prefix.
+end_to_end_ber,recovery,ratio,BER including missing/extra data.
+normalized_rmse,distortion,ratio,RMSE normalized by PCM full scale.
+snr_db,distortion,dB,Cover signal energy divided by error energy.
+psnr_db,distortion,dB,Full-scale peak divided by RMSE.
+histogram_total_variation,distribution,0 to 1,Sample-histogram distance.
+histogram_js_divergence_bits,distribution,bits,Jensen-Shannon divergence.
+echo_detector_delta_l1,detector,correlation,Combined change at both echo delays.
+case_pass,decision,boolean,Execution and required PG-14 analysis passed.
+limit_interpretation,decision,,How the row contributes to lower/upper/reliability limits.

@@ -1,0 +1,16 @@
+﻿field,group,description
+study_id,identity,Unique listening-study identifier.
+pair_id,identity,Blinded pair alias.
+a_is,blind key,Whether A is cover or stego.
+b_is,blind key,Whether B is cover or stego.
+cover_category,condition,"Music, speech, sparse/quiet, or near silence."
+target_payload_fraction,condition,Requested fraction of complete-byte capacity.
+clip_start_sec,audio,Matched excerpt start.
+clip_duration_sec,audio,Matched excerpt duration.
+listener_id,listener,Pseudonymous listener identifier.
+playback_device,listener,Playback hardware.
+listening_environment,listener,Room/noise condition.
+rating,outcome,One required PG-24 category.
+first_apparent_or_obvious_fraction,PG-13,Per-cover perceptual threshold.
+first_obvious_fraction,PG-13,Per-cover obvious threshold.
+highest_undetectable_fraction,PG-13,Largest tested undetectable fraction.

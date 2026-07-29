@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Echo Hiding Audio generated outputs
+CommandLogs/
+Tests/Test Run Summary.txt
+Analysis/pg14_results.csv
+Analysis/results/
+Analysis/pg23_results/
+Analysis/pg24_results/

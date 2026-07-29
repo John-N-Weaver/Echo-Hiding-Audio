@@ -1,191 +1,575 @@
-# Echo-Hiding Stego: Testing & Detectability Report
-CS 4463 Team 21 — Milestone 2
+# Echo Hiding Audio: Milestone 2 Testing Report
 
-All numbers below were measured against the actual `Echo Hiding Audio.exe`
-(x64 Release build), run through the real CLI, on a corpus of 19 WAV files
-spanning dense music, speech, sparse/quiet, synthetic tones, and
-near-silence. Nothing here is estimated or hand-calculated; every table is
-parsed from actual program output. This supersedes the Milestone 1 draft of
-this report, which was written against an earlier, non-final CLI/header
-design.
+**Course:** CS 4463 / CS 5173<br>
+**Team:** 21<br>
+**Authors:** John N. Weaver and Alex W. Bryant<br>
+**Repository:** <https://github.com/John-N-Weaver/Echo-Hiding-Audio><br>
+**Report status:** Current Milestone 2 implementation, July 29, 2026
 
-**Repo note**: `TestData/Corpus/` has since been trimmed to the 8 files
-that round-trip successfully. The two source MP3s and the seven 5-second
-test WAVs are still kept in `TestData/` for reference, but neither works as
-a cover -- MP3 can never work since the tool only accepts uncompressed PCM
-WAV, and the 5-second files can't hold even the 56-bit parameter block (at
-most 53 of 56 bits fit before the file runs out). The tables below
-reference all 19 original corpus files and both bad-format cases, since
-that's the actual data this report documents; `SOURCES.md` explains the
-corpus trim in more detail.
+## 1. Purpose and scope
 
-A full 4-parameter sweep (segment length, both delays, amplitude, message
-cap) across the whole corpus, as described in the M1 report's Analysis
-Plan, is deferred to the Milestone 3 final report per the assignment's own
-staging (M2 requires working code; the statistical analysis deliverable is
-listed under M3). What follows is enough to demonstrate the tool works
-end-to-end and to characterize its current reliability honestly.
+This report documents functional correctness, capacity, lower and upper operating
+limits, statistical detectability, error handling, and the pending human auditory
+evaluation for the current Echo Hiding Audio implementation.
 
-## 1. Functional tests
+The report describes the implementation currently defined by `stego.h` and
+`stego_echo.cpp`. It supersedes testing notes that referred to the earlier
+runtime-parameter design, 4,096- or 8,192-frame configurations, a 56-bit parameter
+block, or decay 0.5.
 
-| Test | Result |
-|------|--------|
-| Run with no arguments | Usage message printed, exit code 1, no crash |
-| `-hide` with a missing cover file | Clean error, exit code 1, no crash |
-| `-hide` with a non-WAV file (`.mp3`) as cover | Clean "not a RIFF file" error, exit code 1, no crash |
-| `-hide` with `-seg` below the minimum (10) | Clean validation error, exit code 2, no crash |
-| `-extract` on a plain WAV that was never hidden into | **Did not reject cleanly -- see Section 5** |
+## 2. Current fixed implementation
 
-All five paths ran without crashing; the last one is a real correctness
-issue, not a crash, and is discussed below rather than hidden.
+The current implementation uses time-domain echo hiding in uncompressed PCM WAV
+audio.
 
-## 2. Capacity
+| Parameter | Current value |
+|---|---:|
+| Segment length | 2,048 audio frames |
+| Bit-0 echo delay | 150 samples |
+| Bit-1 echo delay | 200 samples |
+| Echo decay | 0.4 |
+| Repetition count | 7 physical copies per logical bit |
+| Logical-bit vote | Four of seven |
+| Header | 64 logical bits |
+| Header contents | ASCII `ECHO` plus uint32 requested payload length |
+| Magic tolerance | Up to four bit differences in the 32-bit magic |
+| Supported PCM | 8-bit unsigned or 16-bit signed |
+| Supported channels | Mono or stereo |
 
-Capacity is one bit per `segment_len` frames in the message body, which
-starts after a fixed 229,376-frame (56 segments x 4096-frame bootstrap)
-region reserved for the parameter block. At the default `segment_len=4096`:
+The fixed parameters are intentionally shared by the encoder and decoder rather
+than supplied independently at the command line.
 
-| File | Duration | Sample rate | Channels | Body capacity (bits) | Payload capacity (bytes) |
-|------|---------:|------------:|---------:|----------------------:|--------------------------:|
-| music_rock_16bit_stereo | 43s | 44100 | 2 | 410 | 47 |
-| music_blues_16bit_mono | 90s | 44100 | 1 | 912 | 110 |
-| near_silence / sparse_quiet / synth_tone (all variants) | 90s | 44100 | 1 or 2 | 912 | 110 |
-| music_blues_16bit_stereo / 8bit_mono | 152s | 44100 | 1 or 2 | 1585 | 197 |
-| speech_16bit_mono / 8bit_mono | 90s | 44100 | 1 | 912 / 2774* | 110 / 342* |
-| speech_16bit_stereo | 262s | 44100 | 2 | 2774 | 342 |
+### 2.1 Embedding
 
-\* `speech_16bit_mono` and `speech_8bit_mono` were both generated from the
-same 90s trim, but capacity depends only on frame count, not bit depth or
-channel count -- channel count does not change capacity because the same
-bit stream is embedded identically on every channel, and the discrepancy in
-the table for `speech_8bit_mono` (2774 bits, matching the 262s stereo file's
-frame count rather than the 90s mono trim) is because the `-t 90` ffmpeg
-flag only applied to the first output stream during corpus generation (see
-`SOURCES.md`); the 8-bit file inherited the full untrimmed length.
+Each logical bit is replicated seven times. The copies are interleaved across
+widely separated portions of the cover rather than placed in consecutive
+segments. This reduces correlated failures when one local passage is difficult
+for the detector.
 
-Capacity is *reported*, never enforced: every hide run against
-`sample_message.txt` (4193 bytes) intentionally exceeds every cover's
-capacity, and the program consistently responds with the documented
-warning-and-truncate behavior (Section 4) rather than aborting.
+The mixer uses:
 
-## 3. Parameter-block flexibility (the M1-spec'd `-seg`/`-d0`/`-d1`/`-a`)
+- A 150-sample echo for logical 0
+- A 200-sample echo for logical 1
+- A crossfade near segment boundaries
+- A headroom factor of `1 / (1 + decay)` to prevent clipping
+- Matching attenuation outside the active payload region to avoid an abrupt
+  level change
 
-This is the headline capability the M2 rewrite added: `-seg`, `-d0`, `-d1`,
-and `-a` are no longer compile-time constants -- they're recorded in a
-56-bit parameter block and recovered automatically at extraction. Tested by
-hiding with three different configurations and extracting with **zero**
-`-seg`/`-d0`/`-d1` flags:
+### 2.2 Extraction
 
-| Config used at `-hide` | Recovered at `-extract` (no flags given) | Correct? | Message BER |
-|---|---|:---:|---:|
-| `-seg 2048 -d0 0.7 -d1 1.1 -a 0.35` | segment_len=2048, d0=31 samples, d1=49 samples | Yes | 3.80% |
-| `-seg 8192 -d0 1.0 -d1 1.3 -a 0.4` | segment_len=8192, d0=44 samples, d1=57 samples | Yes | 1.89% |
-| `-seg 1024 -d0 0.5 -d1 0.9 -a 0.3` | segment_len=1024, d0=22 samples, d1=40 samples | Yes | 3.84% |
+For each physical segment, the extractor:
 
-All three recovered their parameters correctly with no user re-entry, and
-the trend matches the M1 report's own prediction: smaller segments raise
-capacity but leave the detector less to work with, so BER rises as
-`segment_len` shrinks (1024 -> 3.84% vs 8192 -> 1.89%).
+1. Reads normalized PCM samples.
+2. Uses the center of the segment to reduce boundary-ramp contamination.
+3. Computes a real cepstrum with an FFT, log-magnitude operation, and inverse
+   FFT.
+4. Calculates local peak-minus-baseline scores near 150 and 200 samples.
+5. Selects the stronger score as the physical bit.
+6. Majority-votes the seven interleaved copies to recover the logical bit.
 
-## 4. Recovery accuracy (BER) and perceptual distortion (SNR)
+The original cover is not required for extraction.
 
-Every corpus file was hidden into with `sample_message.txt` at default
-parameters, then extracted, then compared bit-for-bit against the portion
-of the original message that fit in that cover's capacity.
+### 2.3 Payload and partial-recovery semantics
 
-| File | Hide: bits embedded | Extract | Message BER | Time-domain SNR (dB) |
-|---|---:|:---:|---:|---:|
-| music_blues_16bit_mono | 880 | OK | 1.02% | 8.20 |
-| music_blues_16bit_stereo | 1553 | OK | 0.26% | 8.22 |
-| music_blues_8bit_mono | 1553 | **failed** (param block) | -- | 8.19 |
-| music_rock_16bit_stereo | 378 | OK | 0.00% | 8.06 |
-| near_silence_16bit_mono | 880 | OK | 0.00% | 8.02 |
-| near_silence_16bit_stereo | 880 | OK | 0.00% | 8.02 |
-| near_silence_8bit_mono | 880 | **failed** (param block) | -- | n/a\*\* |
-| near_silence_8bit_stereo | 880 | **failed** (param block) | -- | n/a\*\* |
-| sparse_quiet_16bit_mono | 880 | OK | 0.64% | 8.06 |
-| sparse_quiet_16bit_stereo | 880 | OK | 0.34% | 8.06 |
-| sparse_quiet_8bit_mono | 880 | **failed** (param block) | -- | 8.28 |
-| sparse_quiet_8bit_stereo | 880 | **failed** (param block) | -- | 8.28 |
-| speech_16bit_mono | 880 | **failed** (param block) | -- | 8.07 |
-| speech_16bit_stereo | 2742 | **failed** (param block) | -- | 8.06 |
-| speech_8bit_mono | 2742 | OK | 1.17% | 8.05 |
-| synth_tone_16bit_mono | 880 | **failed** (param block) | -- | 8.07 |
-| synth_tone_16bit_stereo | 880 | **failed** (param block) | -- | 8.07 |
-| synth_tone_8bit_mono | 880 | **failed** (param block) | -- | 8.08 |
-| synth_tone_8bit_stereo | 880 | **failed** (param block) | -- | 8.08 |
+The hidden stream begins with:
 
-\*\* `near_silence_8bit` has ~zero signal-to-noise ratio to measure against:
-see Section 5.
+```text
+Bytes 0-3: ASCII "ECHO"
+Bytes 4-7: requested payload length, uint32 little-endian
+Bytes 8+: requested payload bytes
+```
 
-**8 of 19 files (42%) extracted successfully end-to-end; 11 failed at
-parameter-block validation** ("No hidden data found or file corrupted"),
-even though `-hide` reported successfully embedding the full 56-bit
-parameter block in every case. Among the files that *did* extract
-successfully, message-body BER is low and consistent (0.00%-1.17%, mean
-~0.43%), and SNR is stable around 8.0-8.3 dB regardless of content type
-(expected: the mixer's echo strength is a fixed fraction of the original
-sample regardless of what the sample contains).
+The header stores the full requested length. When a message exceeds cover
+capacity, the program does not reject or pre-truncate the request. It embeds the
+complete protected prefix that fits, saves the resulting stego WAV when the
+header is complete, and reports the shortfall.
 
-The pattern in which files fail is itself informative: every 8-bit file
-failed except `speech_8bit_mono`; among 16-bit files, only the two
-`speech_16bit` variants and all four `synth_tone` variants failed. This is
-consistent with the message-body BER numbers -- a 1-3% per-bit error rate,
-applied to a 56-bit parameter block with **no error correction**, produces
-a substantial chance of a single flipped bit landing in `segment_len`,
-`delay_zero`, or `delay_one` and failing the range/ordering validation
-outright. See Section 5.
+Extraction bounds the declared length against physical capacity and writes every
+complete recovered prefix byte. A partial trailing byte is not written.
 
-## 5. Known limitations (found through this testing, not designed around)
+## 3. Build and execution environment
 
-**Parameter-block fragility.** The 56-bit parameter block is embedded and
-read back with the same detector as the message body, and that detector
-has a nonzero, content-dependent BER (Section 4). Because the block carries
-raw numeric fields with no redundancy, a single flipped bit can corrupt
-`segment_len` or a delay enough to fail validation, discarding an otherwise
-mostly-correct extraction. This is a direct, expected consequence of the
-M1 report's own parameter-block design (which specifies exactly this
-validation and no redundancy scheme) -- not a deviation introduced here,
-but worth naming plainly since it fails on 11 of 19 corpus files.
+The project is a Windows command-line C++ application built with Visual Studio
+2022.
 
-**False-accept on a plain (never-hidden) cover.** `-extract` run on
-`music_blues_16bit_mono.wav`, an unmodified cover, did not report "no
-hidden data" -- it read a parameter block that happened to satisfy the
-validation checks (version byte, segment length range, delay ordering) by
-chance from the file's own natural cepstral content, then proceeded to
-"recover" 14 bytes of garbage under a nonsensical declared length of
-1,850,743,349 bytes (caught and safely bounded by the existing
-"declared length exceeds available segments" guard, so it did not crash or
-runaway-allocate -- it just didn't refuse). This is inherent to the M1
-report's validation design (version + range + ordering checks only, no
-checksum or magic value), and is worth flagging for the M3 report's
-"technical difficulties" section.
+The final grading package should use:
 
-**8-bit near-silence degenerates to true silence.** `near_silence_8bit_*`
-measured an SNR of 0/0 (cover and stego are byte-identical) because the
-source near-silence signal (a few LSBs of dither noise in the 16-bit
-version) quantizes to a constant value at 8-bit depth -- there is no AC
-content left for an echo to attach to, so embedding has no effect at all.
-This is exactly the degenerate case the M1 report's Test Corpus section
-predicted near-silence would expose ("an echo has almost no signal to
-attach to"), just realized one bit depth earlier than expected.
+```text
+Configuration: Release
+Platform:      x64
+```
 
-**Autocorrelation step omitted from extraction**, in favor of comparing the
-cepstrum directly. See `stego_echo_autocorrelation_attempt.md` for the full
-data -- every autocorrelation variant tried was measurably worse (40-100%
-BER) than direct comparison (0-3.8% BER) at this implementation's
+The current regression and analysis evidence was generated from a successfully
+rebuilt development executable. The project has also been built in the Visual
+Studio Debug/Release and x64/Win32 configurations during development. A final
+x64 Release rebuild and extracted-ZIP smoke test remain packaging tasks.
+
+The C++ program does not require Python. Python 3 is required only for the
+supplemental PG-14, PG-23, and PG-24 analysis scripts.
+
+## 4. Command-line interface
+
+```text
+Echo Hiding Audio.exe -hide -m <message file | random> -c <cover.wav> [-o <stego.wav>]
+Echo Hiding Audio.exe -extract -s <stego.wav> [-o <message file>]
+```
+
+Supported options:
+
+| Option | Purpose |
+|---|---|
+| `-hide` | Hide a payload |
+| `-extract` | Extract a payload |
+| `-m <path>` | Payload file, or literal `random` |
+| `-c <path>` | Cover WAV |
+| `-s <path>` | Stego WAV |
+| `-o <path>` | Optional output path |
+| `-h`, `--help` | Print usage and exit successfully |
+
+Running with no parameters prints usage. Unknown, duplicated, incomplete, and
+mode-inappropriate options are rejected cleanly.
+
+## 5. Functional regression testing
+
+### 5.1 Reproduction command
+
+Run from the project root in PowerShell:
+
+```powershell
+& ".\Tests\run_tests.bat"
+```
+
+### 5.2 Latest verified regression result
+
+Latest post-move combined run:
+
+```text
+Run stamp: 20260728_235124
+Overall result: PASS
+```
+
+Results:
+
+| Test group | Result |
+|---|---:|
+| Round-trip cases | 10 run |
+| Exact complete recoveries | 0 |
+| Exact-prefix partial recoveries | 10 |
+| Round-trip failures | 0 |
+| Edge cases | 21 passed |
+| Edge-case failures | 0 |
+
+The ten round-trip fixtures deliberately request more data than their selected
+covers can hold under the low-capacity, seven-copy design. Each case therefore
+tests bounded partial recovery. All ten recovered byte prefixes matched their
+source files exactly.
+
+The edge-case suite covers command-line errors, missing and malformed inputs,
+unsupported formats, capacity boundaries, output naming, and extraction from
+non-stego audio.
+
+### 5.3 Interpretation
+
+The regression result supports these claims:
+
+- The program embeds until protected cover capacity is exhausted.
+- Extraction returns the exact complete-byte prefix that was physically stored.
+- Capacity exhaustion is reported rather than hidden.
+- Tested faulty inputs terminate cleanly rather than crashing.
+- Default output names work for hiding and extraction.
+
+It does not establish that every arbitrary malformed binary file is safe. It
+establishes clean handling for all 21 documented edge cases and the validated WAV
+parser checks described below.
+
+## 6. Capacity
+
+One logical bit consumes:
+
+```text
+2,048 frames/physical observation × 7 copies = 14,336 frames/logical bit
+```
+
+For a cover containing `frame_count` audio frames:
+
+```text
+logical_bits = floor(frame_count / 14,336)
+payload_bytes = floor(max(0, logical_bits - 64) / 8)
+```
+
+Channel count does not increase capacity because all channels carry the same
+logical stream.
+
+### 6.1 Fixed lower boundaries
+
+| Boundary | Frames | Expected behavior |
+|---|---:|---|
+| One frame below complete header | 917,503 | Hide fails cleanly |
+| Header exact | 917,504 | Empty payload completes |
+| One frame below one complete byte | 1,032,191 | Header plus seven payload bits; zero complete payload bytes recover |
+| One byte exact | 1,032,192 | One payload byte completes |
+
+At 44.1 kHz:
+
+- Header-only minimum: approximately 20.8 seconds
+- One-byte minimum: approximately 23.4 seconds
+- Asymptotic rate: approximately 3.08 logical bits/second
+- Approximate payload rate before subtracting the header: 23 bytes/minute
+- Approximate payload capacity of a 60-second cover: 15 complete bytes after
+  the header
+
+### 6.2 Special `-m random` behavior
+
+The literal payload argument `random` generates exactly the number of complete
+random payload bytes reported by the cover-capacity calculation. It is intended
+for capacity-filling tests and differs from ordinary oversized-message behavior.
+
+## 7. PG-23 controlled limit matrix
+
+### 7.1 Reproduction command
+
+```powershell
+& ".\Analysis\run_pg23_matrix.bat"
+```
+
+### 7.2 Matrix design
+
+The default matrix selects four representative supported covers, prioritizing:
+
+1. Music
+2. Speech
+3. Sparse or quiet material
+4. Near silence
+
+Each cover is tested at requested payload fractions:
+
+```text
+0%, 25%, 50%, 75%, 100%, 125%
+```
+
+This creates 24 payload-fraction cases. Four exact lower-boundary cases are
+added, producing 28 controlled cases.
+
+### 7.3 Latest verified PG-23 result
+
+Corrected run:
+
+```text
+Run stamp: 20260729_001404
+Overall result: PASS
+```
+
+Results:
+
+| Result | Count |
+|---|---:|
+| All controlled cases | 28/28 passed |
+| Payload-fraction cases | 24/24 passed |
+| Lower-boundary cases | 4/4 passed |
+| Successful stego WAVs sent to PG-14 | 27 |
+| PG-14 results for generated stego WAVs | 27/27 passed |
+
+There are 27 statistical rows rather than 28 because the
+`L01_BELOW_HEADER` case intentionally fails before a valid stego WAV can be
+created.
+
+### 7.4 Lower-boundary classifications
+
+| ID | Boundary | Verified classification |
+|---|---|---|
+| L01 | Below header | Clean hide failure |
+| L02 | Header exact | Complete empty payload |
+| L03 | One byte minus one frame | Exact zero-byte prefix; incomplete byte omitted |
+| L04 | One byte exact | Complete one-byte recovery |
+
+The L03 generator writes a valid RIFF pad byte when an 8-bit mono data chunk has
+an odd logical size. This prevents a malformed test fixture from being
+misclassified as an algorithmic failure.
+
+### 7.5 Limit conclusion
+
+Within the tested matrix:
+
+- Requests through 100% of complete-byte capacity recover completely.
+- The 125% requests exhaust capacity but recover the exact available prefix.
+- The exact header and one-byte frame thresholds behave as predicted.
+- No compared-prefix corruption was observed.
+- No unexpected reliability failure was observed in the representative matrix.
+
+These findings are limited to the tested cover corpus and fixed implementation
 parameters.
 
-## 6. Reproducing these numbers
+## 8. PG-14 statistical detectability analysis
 
-All results above come from a Python harness that drives the real
-`x64\Release\Echo Hiding Audio.exe` through hide/extract on every file in
-`TestData/Corpus/`, parses the printed summaries, and compares recovered
-bytes bit-for-bit against `TestData/sample_message.txt`. SNR is computed
-directly from the cover/stego PCM samples (time-domain, dB). Any of the
-individual runs can be reproduced manually, e.g.:
+### 8.1 Reproduction command
 
-```cmd
-"x64\Release\Echo Hiding Audio.exe" -hide -m TestData\sample_message.txt -c TestData\Corpus\music_blues_16bit_mono.wav -o stego.wav
-"x64\Release\Echo Hiding Audio.exe" -extract -s stego.wav -o recovered.bin
+To run regression testing followed by PG-14 analysis:
+
+```powershell
+& ".\Analysis\run_tests_then_pg14.bat"
 ```
+
+### 8.2 Metrics
+
+The analysis records:
+
+- Exact compared-prefix BER
+- End-to-end BER, including omitted bytes after capacity exhaustion
+- Modified-sample rate
+- Mean squared error
+- Normalized RMSE
+- Signal-to-noise ratio
+- Peak signal-to-noise ratio
+- Histogram total variation
+- Histogram Jensen-Shannon divergence
+- Echo-detector-oriented delta
+
+Raw MSE should not be compared directly across 8-bit and 16-bit files. Use
+normalized RMSE, SNR, PSNR, distribution metrics, and detector-oriented metrics
+for cross-format comparisons.
+
+### 8.3 Latest verified regression-pair analysis
+
+| Measure | Result |
+|---|---:|
+| Rows analyzed | 10 |
+| Rows passed | 10 |
+| Rows failed | 0 |
+| Exact recovered prefixes | 10 |
+| Zero compared-prefix BER | 10 |
+
+Observed ranges:
+
+| Metric | Minimum | Mean | Maximum |
+|---|---:|---:|---:|
+| MSE | 20.161 | 6.08031e+06 | 2.42657e+07 |
+| SNR, dB | 7.31712 | 7.99912 | 8.75849 |
+| Histogram total variation | 0.0049001 | 0.0733112 | 0.156593 |
+| Echo-detector delta L1 | 0.101105 | 0.280573 | 0.382152 |
+
+### 8.4 Interpretation
+
+- Compared-prefix BER is zero because every physically recovered complete-byte
+  prefix matched its source.
+- End-to-end BER is larger for oversized requests because bytes that cannot fit
+  are counted as missing.
+- Distortion and detector metrics vary materially by cover content and payload
+  level.
+- A low or high value from one WAV does not establish a universal human or
+  machine-detectability threshold.
+- The targeted echo metric is more relevant to this technique than an
+  LSB-specific detector.
+
+## 9. PG-13 and PG-24 auditory evaluation
+
+### 9.1 Status
+
+```text
+Status: PENDING HUMAN LISTENING STUDY
+```
+
+The study-generation and validation tools are installed and have passed
+synthetic tooling validation. Actual perception results must come from a human
+listener and must not be fabricated.
+
+### 9.2 Preparation
+
+```powershell
+& ".\Analysis\run_pg24_prepare.bat"
+```
+
+The current prepared study used:
+
+```text
+Study ID: 20260729_005447
+Pairs:    24
+```
+
+The listener must open the exact timestamped `PG24 Listening Study.html` file
+printed by the preparation command. The listener must not open
+`PG24 Study Key.csv` before completing all ratings.
+
+### 9.3 Required categories
+
+Each pair must receive exactly one rating:
+
+- `obvious`
+- `apparent_close_listening`
+- `undetectable_without_original`
+
+The listener must also record:
+
+- Listener ID
+- Playback device
+- Listening environment
+
+### 9.4 Summarization
+
+After the browser downloads the completed CSV:
+
+```powershell
+& ".\Analysis\run_pg24_summarize.bat" `
+    --ratings "C:\path\to\PG24_Ratings_<study-id>.csv"
+```
+
+A valid run must report:
+
+```text
+Validation errors : 0
+Overall result    : PASS
+```
+
+The summary calculates, for each cover:
+
+- First apparent-or-obvious payload fraction
+- First obvious payload fraction
+- Highest undetectable payload fraction
+
+### 9.5 Change-control rule
+
+An audible result is a valid PG-13/PG-24 finding and is not automatically a
+software defect. Do not change `ECHO_DECAY`, the echo delays, segment length, or
+repetition count solely because one or more cases are audible.
+
+Any parameter change defines a new configuration and requires:
+
+1. C++ rebuild
+2. Full regression suite
+3. PG-14 analysis
+4. PG-23 controlled matrix
+5. A new blinded PG-24 listening study
+6. Documentation updates that identify the new configuration
+
+## 10. WAV and input validation
+
+The current WAV parser validates:
+
+- RIFF and WAVE identifiers
+- Chunk bounds and file-size consistency
+- Required `fmt ` and `data` chunks
+- Classic PCM
+- Extensible PCM only when the subtype is PCM
+- 8-bit unsigned or 16-bit signed samples
+- Mono or stereo
+- Block alignment and byte-rate consistency
+- Truncated or malformed chunks
+- Odd-sized RIFF chunks and required pad bytes
+- Supported valid-bit layouts
+
+The program rejects:
+
+- Missing files
+- Non-WAV files
+- Compressed WAV files
+- Unsupported extensible subtypes
+- Unsupported bit depths, including 24-bit PCM
+- Unsupported channel counts
+- Malformed RIFF/WAVE data
+- Covers too short to contain the complete header
+- Untouched WAV files without a valid hidden header
+- Implausible or capacity-inconsistent payload lengths
+- Input/output path collisions
+
+Existing output files are overwritten only after a warning.
+
+## 11. Direct-command logging
+
+Normal direct invocations are mirrored to:
+
+```text
+CommandLogs\Latest Command.log
+CommandLogs\history\command_<timestamp>_<process-id>.log
+```
+
+The log records:
+
+- Command line
+- Working directory
+- Console output
+- Warnings and errors
+- Final exit code
+
+The automated test harness disables direct-command logging because the harness
+already captures complete transcripts.
+
+## 12. Direct cepstrum comparison versus autocorrelation
+
+The current extractor compares local baseline-corrected cepstral peak scores
+near the two candidate delays. It does not autocorrelate the cepstrum.
+
+Earlier development experiments tested full FFT autocorrelation, liftered
+autocorrelation, and a restricted linear autocorrelation under an older
+configuration. Each variant degraded recovery relative to direct cepstrum
+comparison. That experiment is preserved as a historical engineering record in:
+
+```text
+Docs\stego_echo_autocorrelation_attempt.md
+```
+
+The historical measurements were not rerun as an autocorrelation-versus-direct
+ablation under the current 2,048-frame, 150/200-sample, seven-copy
+configuration. The current implementation is supported independently by the
+regression, PG-14, and PG-23 results documented above.
+
+## 13. Known limits and limitations
+
+- Capacity is low because seven 2,048-frame observations are used per logical
+  bit.
+- Covers shorter than 917,504 frames cannot contain the complete header.
+- Stereo does not increase payload capacity.
+- Low-sample-rate pure tones are a measured reliability boundary. A delayed
+  sinusoid can remain another sinusoid with too little broadband structure for
+  reliable cepstral discrimination.
+- Results from broadband music, speech, noise, sparse material, and near-silence
+  do not imply that every possible WAV will decode successfully.
+- Statistical detectability and auditory detectability are cover-dependent.
+- The human auditory threshold remains pending until the real blinded study is
+  complete.
+- The fixed configuration prioritizes recovery reliability over payload
+  capacity.
+- The header contains no cryptographic authentication or encryption. Payload
+  confidentiality depends on encrypting the message before hiding it.
+- Magic tolerance reduces false rejection from isolated detector errors but is
+  not an integrity guarantee.
+
+## 14. Evidence locations
+
+Primary scripts and documentation:
+
+```text
+Tests\run_tests.bat
+Analysis\README_PG14.md
+Analysis\README_PG23.md
+Analysis\README_PG24.md
+Analysis\PG23_MATRIX_DESIGN.md
+Analysis\PG13_PG24_STUDY_DESIGN.md
+Analysis\pg14_analysis.py
+Analysis\pg23_run_matrix.py
+Analysis\pg24_listening_study.py
+```
+
+Generated evidence:
+
+```text
+Tests\Test Run Summary.txt
+Tests\Latest Test Run.log
+Analysis\results\
+Analysis\pg23_results\
+Analysis\pg24_results\
+```
+
+Generated histories can be large. The final grading ZIP should include compact
+representative summaries and selected evidence rather than every generated WAV
+and historical run directory.
+
+## 15. Current conclusion
+
+The current implementation is functionally stable under the documented
+regression and edge-case suite. Capacity and exact lower limits have been
+measured. The controlled PG-23 matrix passed all 28 cases, and all available
+PG-14 statistical analyses passed with zero compared-prefix BER.
+
+PG-13 and PG-24 remain incomplete until a human listener completes the blinded
+24-pair study and the summarizer validates the returned ratings. No further C++
+change is required merely to record an audible threshold. Parameter retuning,
+when chosen, would require a complete new validation cycle.
