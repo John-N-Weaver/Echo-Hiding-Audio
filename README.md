@@ -290,22 +290,22 @@ Overall result    : PASS
 
 ## Auditory perception status (PG-13 / PG-24)
 
-**Current status:** Pending completion by a human listener using the controlled 24-pair blinded study.
+**Status:** PASS. The controlled 24-pair blinded auditory study was completed and validated with zero errors.
 
-After the study passes validation, update this section with:
+- Study ID: `20260729_142717`
+- Listener ID: `Alex Bryant`
+- Playback device: `Wireless Headphones`
+- Listening environment: `Home Office`
+- Ratings: `24`
+- `obvious`: `0`
+- `apparent_close_listening`: `4`
+- `undetectable_without_original`: `20`
 
-- Study ID
-- Listener ID
-- Playback device
-- Listening environment
-- Total validated ratings
-- Overall counts for `obvious`, `apparent_close_listening`, and `undetectable_without_original`
-- Per-cover first apparent/obvious fraction
-- Per-cover first obvious fraction
-- Per-cover highest undetectable fraction
-- Paths to the committed summary and threshold evidence
-
-Do not change the C++ echo parameters merely because a listener reports an audible difference. PG-13 and PG-24 require the audible threshold to be measured and documented. Any decision to retune `ECHO_DECAY`, delays, segment length, or repetition count creates a new algorithm configuration and requires rebuilding the executable and rerunning the regression, PG-14, PG-23, and PG-24 evaluations.
+The PG-13 perceptual threshold is cover-specific and is recorded in
+`Analysis/pg24_evidence/20260729_142717/PG24 Per-Cover Thresholds.csv`.
+The full summary is stored in
+`Analysis/pg24_evidence/20260729_142717/PG13 PG24 Auditory Summary.txt`.
+No C++ parameters were changed as a result of this measurement.
 
 ## Error handling and output safety
 

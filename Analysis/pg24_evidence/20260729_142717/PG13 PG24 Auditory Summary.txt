@@ -1,0 +1,39 @@
+Echo Hiding Audio - PG-13 / PG-24 Auditory Summary
+===================================================
+Study ID                         : 20260729_142717
+Summarized UTC                   : 2026-07-29T19:43:40+00:00
+Listeners                        : Alex Bryant
+Validated rating rows            : 24
+Validation errors                : 0
+PG-24 three-category completion  : GO
+PG-13 threshold documented       : GO
+
+Overall rating counts
+---------------------
+obvious                          : 0
+apparent_close_listening         : 4
+undetectable_without_original    : 20
+
+Ratings by requested capacity fraction
+--------------------------------------
+- Fraction 0: n=4; obvious=0; apparent_close_listening=0; undetectable_without_original=4
+- Fraction 0.25: n=4; obvious=0; apparent_close_listening=1; undetectable_without_original=3
+- Fraction 0.5: n=4; obvious=0; apparent_close_listening=1; undetectable_without_original=3
+- Fraction 0.75: n=4; obvious=0; apparent_close_listening=1; undetectable_without_original=3
+- Fraction 1: n=4; obvious=0; apparent_close_listening=1; undetectable_without_original=3
+- Fraction 1.25: n=4; obvious=0; apparent_close_listening=0; undetectable_without_original=4
+
+Per-cover perceptual thresholds
+-------------------------------
+- music_blues_16bit_stereo.wav (music): first apparent/obvious=not observed; first obvious=not observed; highest undetectable=1.25
+- near_silence_16bit_mono.wav (near_silence): first apparent/obvious=not observed; first obvious=not observed; highest undetectable=1.25
+- sparse_quiet_16bit_mono.wav (sparse_quiet): first apparent/obvious=0.25; first obvious=not observed; highest undetectable=1.25
+- speech_8bit_mono.wav (speech): first apparent/obvious=not observed; first obvious=not observed; highest undetectable=1.25
+
+Interpretation
+--------------
+- The perceptual threshold is the first tested fraction rated either
+  apparent_close_listening or obvious for each cover.
+- An obvious threshold is reported separately.
+- Ratings are cover-specific.
+- The study uses paired original/stego excerpts.

@@ -1,0 +1,19 @@
+﻿Echo Hiding Audio - PG-13 / PG-24 Listening Study Manifest
+==========================================================
+Study ID                  : 20260729_142717
+Created UTC               : 2026-07-29T19:27:17+00:00
+PG-23 combined results    : <PROJECT_ROOT>\Analysis\pg23_results\Latest PG23 Combined Results.csv
+Pairs prepared            : 24
+Fractions                 : 0, 0.25, 0.5, 0.75, 1, 1.25
+Clip duration requested   : 12.0 seconds
+Randomization seed        : 7313906987247142276
+Listening form            : <PROJECT_ROOT>\Analysis\pg24_results\history\20260729_142717\PG24 Listening Study.html
+Study key                 : <PROJECT_ROOT>\Analysis\pg24_results\history\20260729_142717\PG24 Study Key.csv
+
+Required ratings:
+- obvious
+- apparent_close_listening
+- undetectable_without_original
+
+Keep the study key closed until ratings are completed.
+

@@ -84,3 +84,30 @@ reports zero validation errors.
 
 The software prepares and validates the study. Actual auditory judgments must
 come from a human listener.
+
+## Completed auditory study
+
+- Study ID: `20260729_142717`
+- Listener ID: `Alex Bryant`
+- Playback device: `Wireless Headphones`
+- Listening environment: `Home Office`
+- Validated ratings: `24`
+- Validation errors: `0`
+- Overall result: `PASS`
+
+### Overall category counts
+
+- `obvious`: `0`
+- `apparent_close_listening`: `4`
+- `undetectable_without_original`: `20`
+
+### Per-cover thresholds
+
+| Cover | Category | First apparent/obvious fraction | First obvious fraction | Highest undetectable fraction |
+|---|---|---:|---:|---:|
+| `music_blues_16bit_stereo.wav` | music | not observed | not observed | 1.25 |
+| `near_silence_16bit_mono.wav` | near_silence | not observed | not observed | 1.25 |
+| `sparse_quiet_16bit_mono.wav` | sparse_quiet | 0.25 | not observed | 1.25 |
+| `speech_8bit_mono.wav` | speech | not observed | not observed | 1.25 |
+
+Evidence is retained in `Analysis/pg24_evidence/20260729_142717/`.
