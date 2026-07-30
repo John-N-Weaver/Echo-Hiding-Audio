@@ -1,0 +1,5 @@
+﻿cover_name,cover_category,ratings_count,ratings_complete,first_apparent_or_obvious_fraction,first_obvious_fraction,highest_undetectable_fraction,perceptual_threshold_category,notes
+music_blues_16bit_stereo.wav,music,6,True,,,1.25,not_observed_in_tested_range,Threshold is reported per cover; do not generalize one universal threshold from heterogeneous audio.
+near_silence_16bit_mono.wav,near_silence,6,True,,,1.25,not_observed_in_tested_range,Threshold is reported per cover; do not generalize one universal threshold from heterogeneous audio.
+sparse_quiet_16bit_mono.wav,sparse_quiet,6,True,0.25,,1.25,apparent_close_listening,Threshold is reported per cover; do not generalize one universal threshold from heterogeneous audio.
+speech_8bit_mono.wav,speech,6,True,,,1.25,not_observed_in_tested_range,Threshold is reported per cover; do not generalize one universal threshold from heterogeneous audio.

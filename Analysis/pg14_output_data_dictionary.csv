@@ -1,0 +1,96 @@
+﻿field,group,unit_or_values,description
+analysis_version,identity,,Analysis schema/tool version.
+timestamp_utc,identity,ISO 8601,UTC time at which the row was analyzed.
+analysis_runtime_ms,identity,ms,Wall-clock analysis time for the row.
+run_id,identity,,Identifier shared by one experiment run.
+test_id,identity,,Unique PG-23 matrix test identifier.
+matrix_group,identity,,Cover/payload/parameter subgroup.
+status,identity,,PASS when all requested analysis completed; otherwise FAIL.
+error_message,identity,,Reason a row failed analysis.
+cover_category,matrix factor,,"Music, speech, silence, sparse, noise, etc."
+payload_category,matrix factor,,"Text, image, audio, compressed, encrypted, or binary."
+target_payload_fraction,matrix factor,ratio,Planned requested payload divided by capacity.
+parameter_set,matrix factor,,Named echo-parameter combination.
+notes,matrix factor,,General experiment notes.
+cover_path,file evidence,,Original cover WAV path.
+stego_path,file evidence,,Generated stego WAV path.
+payload_path,file evidence,,Original message path.
+extracted_path,file evidence,,Recovered message path.
+cover_sha256,file evidence,SHA-256,Cover file content hash.
+stego_sha256,file evidence,SHA-256,Stego file content hash.
+payload_sha256,file evidence,SHA-256,Original payload content hash.
+extracted_sha256,file evidence,SHA-256,Extracted payload content hash.
+wav_format_code,WAV metadata,,1 for classic PCM or 65534 for extensible PCM.
+sample_rate_hz,WAV metadata,Hz,Audio sample rate.
+channels,WAV metadata,count,PCM channel count.
+bits_per_sample,WAV metadata,bits,PCM container bit depth.
+valid_bits_per_sample,WAV metadata,bits,Valid PCM bits.
+block_align_bytes,WAV metadata,bytes/frame,Interleaved bytes per audio frame.
+duration_sec,WAV metadata,seconds,Cover duration.
+frame_count,WAV metadata,frames,Cover audio frames.
+sample_count,WAV metadata,samples,Interleaved samples compared.
+cover_data_bytes,WAV metadata,bytes,Cover data-chunk size.
+stego_data_bytes,WAV metadata,bytes,Stego data-chunk size.
+metadata_match,WAV metadata,boolean,Cover/stego PCM metadata match.
+length_match,WAV metadata,boolean,Cover/stego PCM data sizes match.
+segment_len_frames,parameters,frames,Frames per physical echo segment.
+delay_zero_samples,parameters,samples,Echo delay representing zero.
+delay_one_samples,parameters,samples,Echo delay representing one.
+echo_decay,parameters,gain,Echo amplitude multiplier.
+repetition,parameters,copies,Physical copies per logical bit.
+header_bits,parameters,bits,Fixed payload-header size.
+logical_capacity_bits,capacity,bits,Protected logical bits available including header.
+payload_capacity_bits,capacity,bits,Logical capacity remaining after the header.
+payload_capacity_complete_bytes,capacity,bytes,Complete payload bytes recoverable at capacity.
+requested_payload_bytes,capacity,bytes,Original requested payload length.
+requested_payload_bits,capacity,bits,Requested payload length in bits.
+expected_embedded_payload_bits,capacity,bits,"min(requested bits, payload capacity bits)."
+expected_recoverable_payload_bytes,capacity,bytes,Complete expected embedded bytes.
+requested_to_capacity_ratio,capacity,ratio,Requested payload bits divided by payload capacity bits.
+embedded_capacity_utilization,capacity,ratio,Expected embedded bits divided by payload capacity bits.
+cover_bytes_per_payload_byte,capacity,ratio,PCM data bytes required per complete payload byte.
+extracted_payload_bytes,recovery,bytes,Recovered output-file length.
+compared_prefix_bytes,recovery,bytes,Original/extracted prefix bytes compared.
+prefix_exact,recovery,boolean,True when all compared prefix bytes match.
+byte_errors_compared,recovery,bytes,Incorrect bytes within the compared prefix.
+byte_error_rate_compared,recovery,ratio,Incorrect compared bytes divided by compared bytes.
+bit_errors_compared,recovery,bits,Incorrect bits within the compared prefix.
+ber_compared,recovery,ratio,Bit errors divided by compared prefix bits.
+missing_payload_bytes,recovery,bytes,Original bytes absent from extracted output.
+extra_payload_bytes,recovery,bytes,Extracted bytes beyond original length.
+recovery_fraction,recovery,ratio,Compared prefix bytes divided by original bytes.
+end_to_end_error_bits,recovery,bits,Compared bit errors plus all missing/extra bits.
+end_to_end_ber,recovery,ratio,End-to-end errors divided by the larger file length in bits.
+modified_samples,distortion,samples,PCM samples changed from cover to stego.
+sample_modification_rate,distortion,ratio,Changed samples divided by samples compared.
+cover_mean_sample,distortion,PCM units,Mean centered cover sample.
+stego_mean_sample,distortion,PCM units,Mean centered stego sample.
+mean_error,distortion,PCM units,Mean stego-minus-cover error.
+mean_absolute_error,distortion,PCM units,Mean absolute sample difference.
+mse,distortion,PCM units squared,Mean squared sample error.
+rmse,distortion,PCM units,Square root of MSE.
+normalized_rmse,distortion,ratio,RMSE divided by full-scale PCM magnitude.
+peak_absolute_error,distortion,PCM units,Largest absolute sample difference.
+peak_error_fraction_full_scale,distortion,ratio,Peak error divided by full scale.
+snr_db,distortion,dB,10 log10(cover signal energy / error energy).
+psnr_db,distortion,dB,20 log10(full scale / RMSE).
+pearson_correlation,distortion,correlation,Linear correlation of cover/stego samples.
+histogram_bins,distribution,count,Histogram bin count; 256 for both supported bit depths.
+histogram_total_variation,distribution,0 to 1,Half the L1 distance between normalized sample histograms.
+histogram_js_divergence_bits,distribution,bits,Jensen-Shannon divergence between sample histograms.
+cover_autocorr_delay_zero,echo detector,correlation,Cover normalized autocorrelation at zero-bit delay.
+stego_autocorr_delay_zero,echo detector,correlation,Stego normalized autocorrelation at zero-bit delay.
+autocorr_delta_delay_zero,echo detector,correlation,Stego minus cover autocorrelation at zero-bit delay.
+cover_autocorr_delay_one,echo detector,correlation,Cover normalized autocorrelation at one-bit delay.
+stego_autocorr_delay_one,echo detector,correlation,Stego normalized autocorrelation at one-bit delay.
+autocorr_delta_delay_one,echo detector,correlation,Stego minus cover autocorrelation at one-bit delay.
+cover_delay_bias,echo detector,correlation,Cover autocorrelation(delay zero) minus autocorrelation(delay one).
+stego_delay_bias,echo detector,correlation,Stego autocorrelation(delay zero) minus autocorrelation(delay one).
+delay_bias_delta,echo detector,correlation,Stego delay bias minus cover delay bias.
+echo_detector_delta_l1,echo detector,correlation,Absolute autocorrelation changes at both candidate delays summed.
+auditory_rating,listening,category,"obvious, apparent_close_listening, or undetectable_without_original."
+listener_id,listening,,Pseudonymous listener identifier.
+listening_original_available,listening,yes/no,Whether the listener could compare against the cover.
+playback_device,listening,,Headphones or speakers used.
+listening_environment,listening,,Room/environment used for listening.
+listening_notes,listening,,Subjective observations.

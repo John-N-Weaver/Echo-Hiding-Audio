@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -72,98 +72,89 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AssemblerOutput>All</AssemblerOutput>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AssemblerOutput>All</AssemblerOutput>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stego.cpp" />
     <ClCompile Include="stego_echo.cpp" />
-    <ClCompile Include="WaveReader.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="wave_io.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command_log.h" />
     <ClInclude Include="stego.h" />
     <ClInclude Include="wave.h" />
     <ClInclude Include="wave_io.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="WaveReader.cpp" />
     <None Include="README.md" />
+    <None Include="TESTING_REPORT.md" />
     <None Include="Tests\run_tests.bat" />
     <None Include="Tests\TESTING_REPORT.md" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="TestData\60s_test_cover.wav" />
-    <Media Include="TestData\Corpus\music_blues_16bit_mono.wav" />
-    <Media Include="TestData\Corpus\music_blues_16bit_stereo.wav" />
-    <Media Include="TestData\Corpus\music_rock_16bit_stereo.wav" />
-    <Media Include="TestData\Corpus\near_silence_16bit_mono.wav" />
-    <Media Include="TestData\Corpus\near_silence_16bit_stereo.wav" />
-    <Media Include="TestData\Corpus\sparse_quiet_16bit_mono.wav" />
-    <Media Include="TestData\Corpus\sparse_quiet_16bit_stereo.wav" />
-    <Media Include="TestData\Corpus\speech_8bit_mono.wav" />
     <Media Include="TestData\01_silence_5s_mono_16bit_44100.wav" />
     <Media Include="TestData\02_tone_440Hz_5s_mono_16bit_44100.wav" />
     <Media Include="TestData\03_chirp_200-4000Hz_5s_mono_16bit_44100.wav" />
@@ -173,6 +164,14 @@
     <Media Include="TestData\07_tone_440Hz_5s_mono_24bit_48000.wav" />
     <Media Include="TestData\alec_koff-blues-ballad-487408.mp3" />
     <Media Include="TestData\alex-morgan-rock-rock-music-545498.mp3" />
+    <Media Include="TestData\Corpus\music_blues_16bit_mono.wav" />
+    <Media Include="TestData\Corpus\music_blues_16bit_stereo.wav" />
+    <Media Include="TestData\Corpus\music_rock_16bit_stereo.wav" />
+    <Media Include="TestData\Corpus\near_silence_16bit_mono.wav" />
+    <Media Include="TestData\Corpus\near_silence_16bit_stereo.wav" />
+    <Media Include="TestData\Corpus\sparse_quiet_16bit_mono.wav" />
+    <Media Include="TestData\Corpus\sparse_quiet_16bit_stereo.wav" />
+    <Media Include="TestData\Corpus\speech_8bit_mono.wav" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TestData\random_text_message.txt" />

@@ -6,18 +6,24 @@
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <UniqueIdentifier>{93995380-89BD-4B04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <UniqueIdentifier>{67DA6AB6-F800-4C08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Reference Files">
+      <UniqueIdentifier>{2D229E99-D96D-4C65-8C2E-51B8596C4073}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Tests">
-      <UniqueIdentifier>{f9ca57b2-116e-47b8-9c7b-a6b8674a955a}</UniqueIdentifier>
+      <UniqueIdentifier>{F9CA57B2-116E-47B8-9C7B-A6B8674A955A}</UniqueIdentifier>
     </Filter>
     <Filter Include="TestData">
-      <UniqueIdentifier>{7a8336c0-bd23-4988-93e3-711667e0d54d}</UniqueIdentifier>
+      <UniqueIdentifier>{7A8336C0-BD23-4988-93E3-711667E0D54D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestData\Corpus">
+      <UniqueIdentifier>{13246015-2DFC-4311-B10C-B8D11410CBB5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -27,17 +33,17 @@
     <ClCompile Include="stego.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wave_io.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WaveReader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stego_echo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wave_io.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command_log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="stego.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -49,6 +55,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="WaveReader.cpp">
+      <Filter>Reference Files</Filter>
+    </None>
     <None Include="Tests\run_tests.bat">
       <Filter>Tests</Filter>
     </None>
@@ -56,33 +65,10 @@
       <Filter>Tests</Filter>
     </None>
     <None Include="README.md" />
+    <None Include="TESTING_REPORT.md" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="TestData\60s_test_cover.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\music_blues_16bit_mono.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\music_blues_16bit_stereo.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\music_rock_16bit_stereo.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\near_silence_16bit_mono.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\near_silence_16bit_stereo.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\sparse_quiet_16bit_mono.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\sparse_quiet_16bit_stereo.wav">
-      <Filter>TestData</Filter>
-    </Media>
-    <Media Include="TestData\Corpus\speech_8bit_mono.wav">
       <Filter>TestData</Filter>
     </Media>
     <Media Include="TestData\01_silence_5s_mono_16bit_44100.wav">
@@ -112,6 +98,30 @@
     <Media Include="TestData\alex-morgan-rock-rock-music-545498.mp3">
       <Filter>TestData</Filter>
     </Media>
+    <Media Include="TestData\Corpus\music_blues_16bit_mono.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\music_blues_16bit_stereo.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\music_rock_16bit_stereo.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\near_silence_16bit_mono.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\near_silence_16bit_stereo.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\sparse_quiet_16bit_mono.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\sparse_quiet_16bit_stereo.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
+    <Media Include="TestData\Corpus\speech_8bit_mono.wav">
+      <Filter>TestData\Corpus</Filter>
+    </Media>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TestData\random_text_message.txt">
@@ -120,14 +130,14 @@
     <Text Include="TestData\sample_message.txt">
       <Filter>TestData</Filter>
     </Text>
-    <Text Include="TestData\Corpus\SOURCES.md">
-      <Filter>TestData</Filter>
-    </Text>
     <Text Include="TestData\manifest.csv">
       <Filter>TestData</Filter>
     </Text>
     <Text Include="TestData\wav_test_pack_README.txt">
       <Filter>TestData</Filter>
+    </Text>
+    <Text Include="TestData\Corpus\SOURCES.md">
+      <Filter>TestData\Corpus</Filter>
     </Text>
   </ItemGroup>
 </Project>
